@@ -8,10 +8,7 @@ from datetime import datetime
 from fastmcp import FastMCP
 
 # 创建 MCP 实例
-mcp = FastMCP(
-    name="My MCP Server",
-    description="个人 MCP 工具集合",
-)
+mcp = FastMCP(name="My MCP Server")
 
 
 # ── 工具定义 ──────────────────────────────
