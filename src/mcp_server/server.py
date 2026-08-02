@@ -1,5 +1,5 @@
 """
-MCP Server - 个人工具集
+MCP Server - 个人工具集（Cloud Edition）
 基于 FastMCP，通过 Streamable HTTP 暴露服务
 """
 
@@ -18,13 +18,12 @@ from fastmcp import FastMCP
 # ── MCP 实例 ──────────────────────────────
 mcp = FastMCP(name="My MCP Server")
 
-# ── 允许访问的目录 ───────────────────────
+# ── 允许访问的目录（云服务器版）───────────
 ALLOWED_DIRECTORIES = [
-    "/sdcard",
-    "/storage/emulated/0",
-    "/home/user",
-    "/home/user/MCP_review",
+    "/opt/mcp",
     "/tmp",
+    "/var/log",
+    "/etc",
 ]
 
 # ── 路径安全检查 ─────────────────────────
@@ -62,9 +61,9 @@ def get_time_info() -> str:
         "iso": now.isoformat(),
     }, ensure_ascii=False, indent=2)
 
-# ── 工具 2: mcp__File__read_file ─────────
+# ── 工具read_file ─────────
 @mcp.tool()
-def mcp__File__read_file(path: str) -> str:
+def read_file(path: str) -> str:
     """读取任意文件内容。文本文件返回原始文本，二进制文件返回 base64 编码"""
     abs_path = _check_path(path)
 
@@ -94,9 +93,9 @@ def mcp__File__read_file(path: str) -> str:
         "base64": encoded,
     }, ensure_ascii=False)
 
-# ── 工具 3: mcp__File__read_text_file ────
+# ── 工具read_text_file ────
 @mcp.tool()
-def mcp__File__read_text_file(path: str) -> str:
+def read_text_file(path: str) -> str:
     """读取文本文件内容（仅文本文件）"""
     abs_path = _check_path(path)
 
@@ -109,9 +108,9 @@ def mcp__File__read_text_file(path: str) -> str:
     except Exception as e:
         return f"Error reading text file: {e}"
 
-# ── 工具 4: mcp__File__read_media_file ────
+# ── 工具read_media_file ────
 @mcp.tool()
-def mcp__File__read_media_file(path: str) -> str:
+def read_media_file(path: str) -> str:
     """读取多媒体文件（图片、音频、视频等），返回 base64 编码及元信息"""
     abs_path = _check_path(path)
 
@@ -129,10 +128,10 @@ def mcp__File__read_media_file(path: str) -> str:
         "base64": encoded,
     }, ensure_ascii=False)
 
-# ── 工具 5: mcp__File__read_multiple_files ─
+# ── 工具read_multiple_files ─
 @mcp.tool()
-def mcp__File__read_multiple_files(paths: str) -> str:
-    """批量读取多个文件。paths 为 JSON 数组字符串，如 '["/sdcard/a.txt","/sdcard/b.txt"]'"""
+def read_multiple_files(paths: str) -> str:
+    """批量读取多个文件。paths 为 JSON 数组字符串，如 '["/tmp/a.txt","/opt/mcp/b.txt"]'"""
     try:
         path_list = json.loads(paths)
     except json.JSONDecodeError:
@@ -154,9 +153,9 @@ def mcp__File__read_multiple_files(paths: str) -> str:
 
     return json.dumps(results, ensure_ascii=False, indent=2)
 
-# ── 工具 6: mcp__File__write_file ─────────
+# ── 工具write_file ─────────
 @mcp.tool()
-def mcp__File__write_file(path: str, content: str) -> str:
+def write_file(path: str, content: str) -> str:
     """将内容写入文件（覆盖写入）。content 为要写入的文本内容"""
     abs_path = _check_path(path)
 
@@ -172,9 +171,9 @@ def mcp__File__write_file(path: str, content: str) -> str:
         "bytes_written": len(content.encode("utf-8")),
     }, ensure_ascii=False)
 
-# ── 工具 7: mcp__File__edit_file ──────────
+# ── 工具edit_file ──────────
 @mcp.tool()
-def mcp__File__edit_file(
+def edit_file(
     path: str,
     old_text: str,
     new_text: str,
@@ -206,9 +205,9 @@ def mcp__File__edit_file(
         "replacements": original.count(old_text) if replace_all else 1,
     }, ensure_ascii=False)
 
-# ── 工具 8: mcp__File__create_directory ───
+# ── 工具create_directory ───
 @mcp.tool()
-def mcp__File__create_directory(path: str) -> str:
+def create_directory(path: str) -> str:
     """创建目录（自动创建所有父目录）"""
     abs_path = _check_path(path)
 
@@ -219,9 +218,9 @@ def mcp__File__create_directory(path: str) -> str:
         "path": abs_path,
     }, ensure_ascii=False)
 
-# ── 工具 9: mcp__File__list_directory ─────
+# ── 工具list_directory ─────
 @mcp.tool()
-def mcp__File__list_directory(path: str) -> str:
+def list_directory(path: str) -> str:
     """列出目录中的所有文件和子目录"""
     abs_path = _check_path(path)
 
@@ -245,9 +244,9 @@ def mcp__File__list_directory(path: str) -> str:
 
     return json.dumps(entries, ensure_ascii=False, indent=2)
 
-# ── 工具 10: mcp__File__list_directory_with_sizes ─
+# ── 工具list_directory_with_sizes ─
 @mcp.tool()
-def mcp__File__list_directory_with_sizes(path: str) -> str:
+def list_directory_with_sizes(path: str) -> str:
     """列出目录内容，包含每个文件的大小"""
     abs_path = _check_path(path)
 
@@ -274,9 +273,9 @@ def mcp__File__list_directory_with_sizes(path: str) -> str:
 
     return json.dumps(entries, ensure_ascii=False, indent=2)
 
-# ── 工具 11: mcp__File__directory_tree ────
+# ── 工具directory_tree ────
 @mcp.tool()
-def mcp__File__directory_tree(
+def directory_tree(
     path: str,
     max_depth: int = 3,
     show_hidden: bool = False,
@@ -317,9 +316,9 @@ def mcp__File__directory_tree(
     tree_lines = [root_name] + _walk(abs_path)
     return "\n".join(tree_lines)
 
-# ── 工具 12: mcp__File__move_file ─────────
+# ── 工具move_file ─────────
 @mcp.tool()
-def mcp__File__move_file(source: str, destination: str) -> str:
+def move_file(source: str, destination: str) -> str:
     """移动文件或目录（也可用于重命名）"""
     src_abs = _check_path(source)
     dst_abs = _check_path(destination)
@@ -338,9 +337,9 @@ def mcp__File__move_file(source: str, destination: str) -> str:
         "destination": dst_abs,
     }, ensure_ascii=False)
 
-# ── 工具 13: mcp__File__search_files ──────
+# ── 工具search_files ──────
 @mcp.tool()
-def mcp__File__search_files(
+def search_files(
     path: str,
     pattern: str,
     case_sensitive: bool = False,
@@ -383,9 +382,9 @@ def mcp__File__search_files(
 
     return json.dumps(results, ensure_ascii=False, indent=2)
 
-# ── 工具 14: mcp__File__get_file_info ─────
+# ── 工具get_file_info ─────
 @mcp.tool()
-def mcp__File__get_file_info(path: str) -> str:
+def get_file_info(path: str) -> str:
     """获取文件或目录的详细信息"""
     abs_path = _check_path(path)
 
@@ -408,9 +407,9 @@ def mcp__File__get_file_info(path: str) -> str:
 
     return json.dumps(info, ensure_ascii=False, indent=2)
 
-# ── 工具 15: mcp__File__list_allowed_directories ─
+# ── 工具list_allowed_directories ─
 @mcp.tool()
-def mcp__File__list_allowed_directories() -> str:
+def list_allowed_directories() -> str:
     """列出当前允许访问的目录列表"""
     return json.dumps({
         "allowed_directories": [os.path.abspath(os.path.expanduser(d)) for d in ALLOWED_DIRECTORIES],
