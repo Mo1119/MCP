@@ -48,7 +48,7 @@ def _check_path(path: str) -> str:
 
 # ── 工具 1: get_time_info ────────────────
 @mcp.tool()
-def get_time_info() -> str:
+def mcp__File__get_time_info() -> str:
     """获取当前日期和时间信息"""
     now = datetime.now()
     return json.dumps({
@@ -63,7 +63,7 @@ def get_time_info() -> str:
 
 # ── 工具read_file ─────────
 @mcp.tool()
-def read_file(path: str) -> str:
+def mcp__File__read_file(path: str) -> str:
     """读取任意文件内容。文本文件返回原始文本，二进制文件返回 base64 编码"""
     abs_path = _check_path(path)
 
@@ -95,7 +95,7 @@ def read_file(path: str) -> str:
 
 # ── 工具read_text_file ────
 @mcp.tool()
-def read_text_file(path: str) -> str:
+def mcp__File__read_text_file(path: str) -> str:
     """读取文本文件内容（仅文本文件）"""
     abs_path = _check_path(path)
 
@@ -110,7 +110,7 @@ def read_text_file(path: str) -> str:
 
 # ── 工具read_media_file ────
 @mcp.tool()
-def read_media_file(path: str) -> str:
+def mcp__File__read_media_file(path: str) -> str:
     """读取多媒体文件（图片、音频、视频等），返回 base64 编码及元信息"""
     abs_path = _check_path(path)
 
@@ -130,7 +130,7 @@ def read_media_file(path: str) -> str:
 
 # ── 工具read_multiple_files ─
 @mcp.tool()
-def read_multiple_files(paths: str) -> str:
+def mcp__File__read_multiple_files(paths: str) -> str:
     """批量读取多个文件。paths 为 JSON 数组字符串，如 '["/tmp/a.txt","/opt/mcp/b.txt"]'"""
     try:
         path_list = json.loads(paths)
@@ -155,7 +155,7 @@ def read_multiple_files(paths: str) -> str:
 
 # ── 工具write_file ─────────
 @mcp.tool()
-def write_file(path: str, content: str) -> str:
+def mcp__File__write_file(path: str, content: str) -> str:
     """将内容写入文件（覆盖写入）。content 为要写入的文本内容"""
     abs_path = _check_path(path)
 
@@ -173,7 +173,7 @@ def write_file(path: str, content: str) -> str:
 
 # ── 工具edit_file ──────────
 @mcp.tool()
-def edit_file(
+def mcp__File__edit_file(
     path: str,
     old_text: str,
     new_text: str,
@@ -207,7 +207,7 @@ def edit_file(
 
 # ── 工具create_directory ───
 @mcp.tool()
-def create_directory(path: str) -> str:
+def mcp__File__create_directory(path: str) -> str:
     """创建目录（自动创建所有父目录）"""
     abs_path = _check_path(path)
 
@@ -220,7 +220,7 @@ def create_directory(path: str) -> str:
 
 # ── 工具list_directory ─────
 @mcp.tool()
-def list_directory(path: str) -> str:
+def mcp__File__list_directory(path: str) -> str:
     """列出目录中的所有文件和子目录"""
     abs_path = _check_path(path)
 
@@ -246,7 +246,7 @@ def list_directory(path: str) -> str:
 
 # ── 工具list_directory_with_sizes ─
 @mcp.tool()
-def list_directory_with_sizes(path: str) -> str:
+def mcp__File__list_directory_with_sizes(path: str) -> str:
     """列出目录内容，包含每个文件的大小"""
     abs_path = _check_path(path)
 
@@ -275,7 +275,7 @@ def list_directory_with_sizes(path: str) -> str:
 
 # ── 工具directory_tree ────
 @mcp.tool()
-def directory_tree(
+def mcp__File__directory_tree(
     path: str,
     max_depth: int = 3,
     show_hidden: bool = False,
@@ -318,7 +318,7 @@ def directory_tree(
 
 # ── 工具move_file ─────────
 @mcp.tool()
-def move_file(source: str, destination: str) -> str:
+def mcp__File__move_file(source: str, destination: str) -> str:
     """移动文件或目录（也可用于重命名）"""
     src_abs = _check_path(source)
     dst_abs = _check_path(destination)
@@ -339,7 +339,7 @@ def move_file(source: str, destination: str) -> str:
 
 # ── 工具search_files ──────
 @mcp.tool()
-def search_files(
+def mcp__File__search_files(
     path: str,
     pattern: str,
     case_sensitive: bool = False,
@@ -384,7 +384,7 @@ def search_files(
 
 # ── 工具get_file_info ─────
 @mcp.tool()
-def get_file_info(path: str) -> str:
+def mcp__File__get_file_info(path: str) -> str:
     """获取文件或目录的详细信息"""
     abs_path = _check_path(path)
 
@@ -409,7 +409,7 @@ def get_file_info(path: str) -> str:
 
 # ── 工具list_allowed_directories ─
 @mcp.tool()
-def list_allowed_directories() -> str:
+def mcp__File__list_allowed_directories() -> str:
     """列出当前允许访问的目录列表"""
     return json.dumps({
         "allowed_directories": [os.path.abspath(os.path.expanduser(d)) for d in ALLOWED_DIRECTORIES],
